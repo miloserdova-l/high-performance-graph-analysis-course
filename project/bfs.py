@@ -5,6 +5,22 @@ from pygraphblas.descriptor import R, RC
 
 
 def bfs(graph: Matrix, start_vertex: int) -> List[int]:
+    """
+    Breadth-first search of a directed graph from a given vertex
+    Parameters
+    ----------
+    graph: Matrix
+        adjacency matrix of graph
+    start_vertex: int
+        number of first vertex (from 0 to n-1)
+    Returns
+    -------
+    List[int]
+        an array, where for each vertex it is indicated
+        at what step it is reachable. The start vertex is reachable
+        at the zero step, if the vertex is not reachable, then the
+        value of the corresponding cell is -1.
+    """
     if not graph.square:
         raise ValueError("Adjacency matrix of the graph must be square")
     if start_vertex >= graph.nrows or start_vertex < 0:
@@ -34,6 +50,22 @@ def bfs(graph: Matrix, start_vertex: int) -> List[int]:
 def multi_source_bfs(
     graph: Matrix, start_vertices: List[int]
 ) -> List[Tuple[int, List[int]]]:
+    """
+        Breadth-first search of a directed graph from a given vertex
+        Parameters
+        ----------
+        graph: Matrix
+            adjacency matrix of graph
+        start_vertices: List[int]
+            array of start vertex numbers (each from 0 to n-1)
+        Returns
+        -------
+        List[Tuple[int, List[int]]]
+            array of pairs: a vertex, and an array, where for each vertex
+            it is indicated at which step it is reachable from the specified one.
+            The start vertex is reachable at the zero step, if the vertex is not
+            reachable, then the value of the corresponding cell is -1.
+    """
     if not graph.square:
         raise ValueError("Adjacency matrix of the graph must be square")
     if any(start_vertex >= graph.nrows or start_vertex < 0 for start_vertex in start_vertices):
