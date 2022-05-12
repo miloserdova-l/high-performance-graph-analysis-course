@@ -5,12 +5,12 @@ on:
 
 jobs:
   test:
-    name: Run tests on ${{ matrix.python-version }}
+    name: Run tests on python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.8', '3.9', '3.10' ]
+        python-version: [ '3.6', '3.7', '3.8', '3.9' ]
     steps:
       - name: Set up Git repository
         uses: actions/checkout@v2
