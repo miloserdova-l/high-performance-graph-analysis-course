@@ -66,36 +66,52 @@ def test_mssp(I, J, V, size, start_vertices, expected_ans):
 
 
 def test_non_square_sssp():
-    adj_matrix = Matrix.dense(INT64, nrows=5, ncols=7)
+    graph = Matrix.dense(INT64, nrows=5, ncols=7)
     with pytest.raises(ValueError):
-        sssp(adj_matrix, 0)
+        sssp(graph, 0)
 
 
-def test_non_square_multi_source_bfs():
-    adj_matrix = Matrix.dense(INT64, nrows=5, ncols=7)
+def test_non_square_mssp():
+    graph = Matrix.dense(INT64, nrows=5, ncols=7)
     with pytest.raises(ValueError):
-        mssp(adj_matrix, [0])
+        mssp(graph, [0])
 
 
 def test_invalid_matrix_type_sssp():
-    adj_matrix = Matrix.dense(BOOL, nrows=5, ncols=5)
+    graph = Matrix.dense(BOOL, nrows=5, ncols=5)
     with pytest.raises(ValueError):
-        sssp(adj_matrix, 0)
+        sssp(graph, 0)
 
 
-def test_invalid_matrix_type_multi_source_bfs():
-    adj_matrix = Matrix.dense(BOOL, nrows=5, ncols=5)
+def test_invalid_matrix_type_mssp():
+    graph = Matrix.dense(BOOL, nrows=5, ncols=5)
     with pytest.raises(ValueError):
-        mssp(adj_matrix, [0])
+        mssp(graph, [0])
 
 
 def test_invalid_start_vertex_sssp():
-    adj_matrix = Matrix.dense(INT64, nrows=5, ncols=5)
+    graph = Matrix.dense(INT64, nrows=5, ncols=5)
     with pytest.raises(ValueError):
-        sssp(adj_matrix, 5)
+        sssp(graph, 5)
 
 
-def test_invalid_start_vertex_multi_source_bfs():
-    adj_matrix = Matrix.dense(INT64, nrows=5, ncols=5)
+def test_invalid_start_vertex_mssp():
+    graph = Matrix.dense(INT64, nrows=5, ncols=5)
     with pytest.raises(ValueError):
-        mssp(adj_matrix, [5])
+        mssp(graph, [5])
+
+
+def test_negative_cycle_sssp():
+    graph = Matrix.from_lists(
+        [0, 1, 2, 3, 1], [1, 2, 3, 1, 4], [5, -1, -1, 1, 1], nrows=5, ncols=5
+    )
+    with pytest.raises(ValueError):
+        sssp(graph, 0)
+
+
+def test_negative_cycle_mssp():
+    graph = Matrix.from_lists(
+        [0, 1, 2, 3, 1], [1, 2, 3, 1, 4], [5, -1, -1, 1, 1], nrows=5, ncols=5
+    )
+    with pytest.raises(ValueError):
+        mssp(graph, [0])
