@@ -1,5 +1,6 @@
 import pytest
-import pygraphblas as gb
+from pygraphblas import Matrix
+from pygraphblas.types import BOOL, INT64
 from project.bfs import bfs, multi_source_bfs
 
 
@@ -35,7 +36,7 @@ from project.bfs import bfs, multi_source_bfs
     ],
 )
 def test_bfs(I, J, V, size, start_vertex, expected_ans):
-    graph = gb.Matrix.from_lists(I, J, V, nrows=size, ncols=size)
+    graph = Matrix.from_lists(I, J, V, nrows=size, ncols=size)
     assert bfs(graph, start_vertex) == expected_ans
 
 
@@ -74,41 +75,41 @@ def test_bfs(I, J, V, size, start_vertex, expected_ans):
     ],
 )
 def test_multi_source_bfs(I, J, V, size, start_vertices, expected_ans):
-    graph = gb.Matrix.from_lists(I, J, V, nrows=size, ncols=size)
+    graph = Matrix.from_lists(I, J, V, nrows=size, ncols=size)
     assert multi_source_bfs(graph, start_vertices) == expected_ans
 
 
 def test_non_square_bfs():
-    adj_matrix = gb.Matrix.dense(gb.BOOL, nrows=5, ncols=7)
+    adj_matrix = Matrix.dense(BOOL, nrows=5, ncols=7)
     with pytest.raises(ValueError):
         bfs(adj_matrix, 0)
 
 
 def test_non_square_multi_source_bfs():
-    adj_matrix = gb.Matrix.dense(gb.BOOL, nrows=5, ncols=7)
+    adj_matrix = Matrix.dense(BOOL, nrows=5, ncols=7)
     with pytest.raises(ValueError):
         multi_source_bfs(adj_matrix, [0])
 
 
 def test_invalid_matrix_type_bfs():
-    adj_matrix = gb.Matrix.dense(gb.INT64, nrows=5, ncols=5)
+    adj_matrix = Matrix.dense(INT64, nrows=5, ncols=5)
     with pytest.raises(ValueError):
         bfs(adj_matrix, 0)
 
 
 def test_invalid_matrix_type_multi_source_bfs():
-    adj_matrix = gb.Matrix.dense(gb.INT64, nrows=5, ncols=5)
+    adj_matrix = Matrix.dense(INT64, nrows=5, ncols=5)
     with pytest.raises(ValueError):
         multi_source_bfs(adj_matrix, [0])
 
 
 def test_invalid_start_vertex_bfs():
-    adj_matrix = gb.Matrix.dense(gb.BOOL, nrows=5, ncols=5)
+    adj_matrix = Matrix.dense(BOOL, nrows=5, ncols=5)
     with pytest.raises(ValueError):
         bfs(adj_matrix, 5)
 
 
 def test_invalid_start_vertex_multi_source_bfs():
-    adj_matrix = gb.Matrix.dense(gb.BOOL, nrows=5, ncols=5)
+    adj_matrix = Matrix.dense(BOOL, nrows=5, ncols=5)
     with pytest.raises(ValueError):
         multi_source_bfs(adj_matrix, [5])
