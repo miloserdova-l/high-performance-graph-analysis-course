@@ -34,13 +34,13 @@ def sssp(graph: Matrix, start_vertex: int) -> List[int]:
     d = Vector.dense(INT64, n, fill=INF)
     d[start_vertex] = 0
 
-    for i in range(n - 1):
+    for i in range(n):
+        prev = np.copy(d)
         d.vxm(graph, INT64.min_plus, out=d, accum=INT64.min)
-
-    prev = np.copy(d)
-    d.vxm(graph, INT64.min_plus, out=d, accum=INT64.min)
-    if not np.array_equal(d, prev):
-        raise ValueError("There is a negative cycle in the graph")
+        if np.array_equal(d, prev):
+            break
+        elif i == n - 1:
+            raise ValueError("There is a negative cycle in the graph")
 
     d[d == INF] = -1
 
@@ -74,19 +74,5 @@ def mssp(graph: Matrix, start_vertices: List[int]) -> List[Tuple[int, List[int]]
         raise ValueError("No vertex with such number")
     if graph.type not in {INT8, INT16, INT32, INT64, UINT8, UINT16, UINT32, UINT64}:
         raise ValueError(f"Unsupported graph type: {graph.type}. Expected type: INT")
-    n = graph.ncols
-    d = Matrix.dense(INT64, ncols=n, nrows=len(start_vertices), fill=INF)
-    for i, start_vertex in enumerate(start_vertices):
-        d.assign_scalar(0, i, start_vertex)
 
-    for i in range(n - 1):
-        d.mxm(graph, INT64.min_plus, out=d, accum=INT64.min)
-
-    prev = np.copy(d)
-    d.mxm(graph, INT64.min_plus, out=d, accum=INT64.min)
-    if not np.array_equal(d, prev):
-        raise ValueError("There is a negative cycle in the graph")
-
-    d[d == INF] = -1
-
-    return [(vertex, list(d[i].vals)) for i, vertex in enumerate(start_vertices)]
+    return [(vertex, sssp(graph, vertex)) for vertex in start_vertices]
