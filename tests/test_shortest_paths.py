@@ -1,18 +1,19 @@
 import pytest
 from pygraphblas import Matrix
-from pygraphblas.types import INT64, BOOL
+from pygraphblas.types import UINT64, INT64, INT32, BOOL, FP32
 
 from project.shortest_paths import sssp, mssp
 
 
 @pytest.mark.parametrize(
-    "I, J, V, size, start_vertex, expected_ans",
+    "I, J, V, size, type, start_vertex, expected_ans",
     [
         (
             [0, 3, 0, 1, 1, 3, 4, 5, 2, 6, 6, 6],
             [3, 0, 1, 6, 4, 2, 5, 2, 5, 2, 3, 4],
             [8, 2, 3, 7, 1, 4, 1, 5, 5, 1, 5, 8],
             7,
+            INT32,
             0,
             [0, 3, 10, 8, 4, 5, 10],
         ),
@@ -21,6 +22,7 @@ from project.shortest_paths import sssp, mssp
             [3, 0, 1, 6, 4, 2, 5, 2, 5, 2, 3, 4],
             [8.0, 2.0, 3.0, 7.0, 1.0, 4.0, 1.0, 5.0, 5.0, 1.0, 5.0, 8.0],
             7,
+            FP32,
             1,
             [14.0, 0.0, 7.0, 12.0, 1.0, 2.0, 7.0],
         ),
@@ -29,6 +31,7 @@ from project.shortest_paths import sssp, mssp
             [3, 0, 1, 6, 4, 2, 5, 2, 5, 2, 3, 4],
             [8, 2, 3, 7, 1, 4, 1, 5, 5, 1, 5, 8],
             8,
+            INT32,
             0,
             [0, 3, 10, 8, 4, 5, 10, -1],
         ),
@@ -50,6 +53,7 @@ from project.shortest_paths import sssp, mssp
                 8 * 2 ** 59,
             ],
             7,
+            UINT64,
             0,
             [
                 0,
@@ -63,8 +67,8 @@ from project.shortest_paths import sssp, mssp
         ),
     ],
 )
-def test_sssp(I, J, V, size, start_vertex, expected_ans):
-    graph = Matrix.from_lists(I, J, V, nrows=size, ncols=size)
+def test_sssp(I, J, V, size, type, start_vertex, expected_ans):
+    graph = Matrix.from_lists(I, J, V, nrows=size, ncols=size, typ=type)
     assert sssp(graph, start_vertex) == expected_ans
 
 

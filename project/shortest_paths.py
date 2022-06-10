@@ -1,19 +1,6 @@
-import math
-from typing import List, Tuple
+from typing import List
 import numpy as np
 from pygraphblas import Matrix, Vector
-from pygraphblas.types import (
-    INT8,
-    INT16,
-    INT32,
-    INT64,
-    UINT8,
-    UINT16,
-    UINT32,
-    UINT64,
-    FP32,
-    FP64,
-)
 
 
 def sssp(graph: Matrix, start_vertex: int) -> list:
@@ -38,30 +25,13 @@ def sssp(graph: Matrix, start_vertex: int) -> list:
         raise ValueError("Adjacency matrix of the graph must be square")
     if start_vertex >= graph.nrows or start_vertex < 0:
         raise ValueError("No vertex with such number")
-    if graph.type not in {
-        INT8,
-        INT16,
-        INT32,
-        INT64,
-        UINT8,
-        UINT16,
-        UINT32,
-        UINT64,
-        FP32,
-        FP64,
-    }:
+    if not hasattr(graph.type, "min_plus"):
         raise ValueError(
-            f"Unsupported graph type: {graph.type}. Expected type: INT or FLOAT"
+            f"Unsupported graph type: {graph.type}. Graph must have min_plus operation defined."
         )
     n = graph.ncols
-    print(max(graph.vals))
-    if graph.type in {FP32, FP64} or max(graph.vals) * (n - 1) > 2 ** 62 - 1:
-        inf = math.inf
-        d = Vector.dense(FP64, n, fill=inf)
-    else:
-        inf = 2 ** 62
-        d = Vector.dense(INT64, n, fill=inf)
-    d[start_vertex] = 0
+    d = Vector.sparse(graph.type, size=n)
+    d[start_vertex] = graph.type.default_zero
 
     for i in range(n):
         prev = np.copy(d)
@@ -71,9 +41,7 @@ def sssp(graph: Matrix, start_vertex: int) -> list:
         elif i == n - 1:
             raise ValueError("There is a negative cycle in the graph")
 
-    d[d == inf] = -1
-
-    return list(d.vals)
+    return [d.get(i, -1) for i in range(n)]
 
 
 def mssp(graph: Matrix, start_vertices: List[int]) -> list:
@@ -94,27 +62,4 @@ def mssp(graph: Matrix, start_vertices: List[int]) -> list:
         If the vertex is not reachable, then the
         value of the corresponding cell is -1.
     """
-    if not graph.square:
-        raise ValueError("Adjacency matrix of the graph must be square")
-    if any(
-        start_vertex >= graph.nrows or start_vertex < 0
-        for start_vertex in start_vertices
-    ):
-        raise ValueError("No vertex with such number")
-    if graph.type not in {
-        INT8,
-        INT16,
-        INT32,
-        INT64,
-        UINT8,
-        UINT16,
-        UINT32,
-        UINT64,
-        FP32,
-        FP64,
-    }:
-        raise ValueError(
-            f"Unsupported graph type: {graph.type}. Expected type: INT or FLOAT"
-        )
-
     return [(vertex, sssp(graph, vertex)) for vertex in start_vertices]
