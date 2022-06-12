@@ -1,1 +1,1 @@
-from project import bfs
+from . import bfs, shortest_paths
